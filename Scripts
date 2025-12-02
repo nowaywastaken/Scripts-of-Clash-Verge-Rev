@@ -1,0 +1,233 @@
+// ==========================================
+// 1. 你的自定义规则 (分流逻辑)
+// ==========================================
+const myRules = [
+  // --- 流媒体队 (新加坡) ---
+  // Netflix (这一段放在前面，优先级最高)
+  "DOMAIN-SUFFIX,netflix.com,🇸🇬 流媒体",
+  "DOMAIN-SUFFIX,netflix.net,🇸🇬 流媒体",
+  "DOMAIN-SUFFIX,nflximg.net,🇸🇬 流媒体",
+  "DOMAIN-SUFFIX,nflxvideo.net,🇸🇬 流媒体",
+  "DOMAIN-SUFFIX,nflxso.net,🇸🇬 流媒体",
+  "DOMAIN-SUFFIX,nflxext.com,🇸🇬 流媒体",
+  "DOMAIN-KEYWORD,netflix,🇸🇬 流媒体",
+  "DOMAIN-SUFFIX,fast.com,🇸🇬 流媒体", // 把原本漏在下面的测速网也加上
+  
+  // TikTok (这一段放在前面，优先级最高)
+  "DOMAIN-SUFFIX,tiktok.com,🇸🇬 流媒体",
+  "DOMAIN-SUFFIX,tiktokv.com,🇸🇬 流媒体",
+  "DOMAIN-SUFFIX,tiktokcdn.com,🇸🇬 流媒体",
+  "DOMAIN-KEYWORD,tiktok,🇸🇬 流媒体",
+  "DOMAIN-SUFFIX,musical.ly,🇸🇬 流媒体",
+  "DOMAIN-SUFFIX,muscdn.com,🇸🇬 流媒体",
+  
+  // --- 剩下的全部给日常主力队 (美/日) ---
+  // Apple Relay (隐私中继相关)
+  "DOMAIN-SUFFIX,apple-relay.akamaized.net,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-SUFFIX,apple-relay.apple.com,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-SUFFIX,apple-relay.cloudflare.com,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-SUFFIX,apple-relay.fastly-edge.com,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-SUFFIX,apple-relay.mask.apple-dns.net,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-SUFFIX,v2ex.com,🇺🇸🇯🇵 日常主力",
+
+  // ChatGPT
+  "DOMAIN,api.statsig.com,🇺🇸🇯🇵 日常主力",
+  "DOMAIN,browser-intake-datadoghq.com,🇺🇸🇯🇵 日常主力",
+  "DOMAIN,chat.openai.com.cdn.cloudflare.net,🇺🇸🇯🇵 日常主力",
+  "DOMAIN,o33249.ingest.sentry.io,🇺🇸🇯🇵 日常主力",
+  "DOMAIN,openai-api.arkoselabs.com,🇺🇸🇯🇵 日常主力",
+  "DOMAIN,openaicom-api-bdcpf8c6d2e9atf6.z01.azurefd.net,🇺🇸🇯🇵 日常主力",
+  "DOMAIN,openaicomproductionae4b.blob.core.windows.net,🇺🇸🇯🇵 日常主力",
+  "DOMAIN,production-openaicom-storage.azureedge.net,🇺🇸🇯🇵 日常主力",
+  "DOMAIN,static.cloudflareinsights.com,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-KEYWORD,openaicom-api,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-SUFFIX,algolia.net,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-SUFFIX,auth0.com,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-SUFFIX,cdn.cloudflare.net,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-SUFFIX,challenges.cloudflare.com,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-SUFFIX,chatgpt.livekit.cloud,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-SUFFIX,client-api.arkoselabs.com,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-SUFFIX,events.statsigapi.net,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-SUFFIX,featuregates.org,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-SUFFIX,host.livekit.cloud,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-SUFFIX,identrust.com,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-SUFFIX,intercom.io,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-SUFFIX,intercomcdn.com,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-SUFFIX,launchdarkly.com,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-SUFFIX,oaistatic.com,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-SUFFIX,oaiusercontent.com,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-SUFFIX,observeit.net,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-SUFFIX,openai.com,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-SUFFIX,openaiapi-site.azureedge.net,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-SUFFIX,openaicom.imgix.net,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-SUFFIX,poe.com,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-SUFFIX,segment.io,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-SUFFIX,sentry.io,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-SUFFIX,stripe.com,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-SUFFIX,turn.livekit.cloud,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-SUFFIX,chatgpt.com,🇺🇸🇯🇵 日常主力",
+  "IP-CIDR,24.199.123.28/32,🇺🇸🇯🇵 日常主力,no-resolve",
+  "IP-CIDR,45.76.214.191/32,🇺🇸🇯🇵 日常主力,no-resolve",
+  "IP-CIDR,64.23.132.171/32,🇺🇸🇯🇵 日常主力,no-resolve",
+  "IP-CIDR,143.198.200.27/32,🇺🇸🇯🇵 日常主力,no-resolve",
+  "IP-CIDR,159.89.204.203/32,🇺🇸🇯🇵 日常主力,no-resolve",
+
+  // Google
+  "DOMAIN-KEYWORD,blogspot,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-KEYWORD,google,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-SUFFIX,abc.xyz,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-SUFFIX,admin.recaptcha.net,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-SUFFIX,ampproject.org,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-SUFFIX,android.com,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-SUFFIX,androidify.com,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-SUFFIX,appspot.com,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-SUFFIX,autodraw.com,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-SUFFIX,blogger.com,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-SUFFIX,capitalg.com,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-SUFFIX,certificate-transparency.org,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-SUFFIX,chrome.com,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-SUFFIX,chromeexperiments.com,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-SUFFIX,chromestatus.com,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-SUFFIX,chromium.org,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-SUFFIX,creativelab5.com,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-SUFFIX,debug.com,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-SUFFIX,deepmind.com,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-SUFFIX,dialogflow.com,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-SUFFIX,firebaseio.com,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-SUFFIX,getmdl.io,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-SUFFIX,getoutline.org,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-SUFFIX,ggpht.com,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-SUFFIX,gmail.com,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-SUFFIX,gmodules.com,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-SUFFIX,godoc.org,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-SUFFIX,golang.org,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-SUFFIX,gstatic.com,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-SUFFIX,gv.com,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-SUFFIX,gvt0.com,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-SUFFIX,gvt1.com,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-SUFFIX,gvt3.com,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-SUFFIX,gwtproject.org,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-SUFFIX,itasoftware.com,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-SUFFIX,madewithcode.com,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-SUFFIX,material.io,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-SUFFIX,polymer-project.org,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-SUFFIX,recaptcha.net,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-SUFFIX,shattered.io,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-SUFFIX,synergyse.com,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-SUFFIX,telephony.goog,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-SUFFIX,tensorflow.org,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-SUFFIX,tfhub.dev,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-SUFFIX,tiltbrush.com,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-SUFFIX,waveprotocol.org,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-SUFFIX,waymo.com,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-SUFFIX,webmproject.org,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-SUFFIX,webrtc.org,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-SUFFIX,whatbrowser.org,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-SUFFIX,widevine.com,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-SUFFIX,x.company,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-SUFFIX,xn--ngstr-lra8j.com,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-SUFFIX,youtu.be,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-SUFFIX,yt.be,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-SUFFIX,ytimg.com,🇺🇸🇯🇵 日常主力",
+
+  // LINE
+  "DOMAIN-SUFFIX,scdn.co,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-SUFFIX,line.naver.jp,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-SUFFIX,line.me,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-SUFFIX,line-apps.com,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-SUFFIX,line-cdn.net,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-SUFFIX,line-scdn.net,🇺🇸🇯🇵 日常主力",
+
+  // Porn Websites (咳咳，学习资料)
+  "DOMAIN-KEYWORD,pornhub,🇺🇸🇯🇵 日常主力",
+  "DOMAIN-KEYWORD,xhamster,🇺🇸🇯🇵 日常主力",
+
+  // Steam
+  "DOMAIN-SUFFIX,steampowered.com,🇺🇸🇯🇵 日常主力",
+
+  // 注意：MATCH规则放在最后，代表“所有前面没提到的，都走这条路”
+  "MATCH,🇺🇸🇯🇵 日常主力",
+
+  // --- 直连规则 (不用翻墙) ---
+  "IP-CIDR,192.168.0.0/32,DIRECT,no-resolve",
+  "IP-CIDR,127.0.0.0/32,DIRECT,no-resolve",
+  "DOMAIN-KEYWORD,csust,DIRECT", // 长沙理工
+  "GEOIP,CN,DIRECT" // 中国大陆直连
+];
+
+// ==========================================
+// 2. 筛选节点的逻辑 (挑选队员)
+// ==========================================
+
+// 判断是否为 "日常节点" (美国 或 日本) 且 (绝不要 香港 和 台湾)
+function isDailyNode(name) {
+    // 必须包含 美国 或 日本
+    const include = /(美国|日本|US|JP|Japan|America)/i.test(name);
+    // 必须 不包含 香港 或 台湾
+    const exclude = /(香港|台湾|HK|TW|HongKong|Taiwan)/i.test(name);
+    return include && !exclude;
+}
+
+// 判断是否为 "流媒体节点" (新加坡)
+function isStreamNode(name) {
+    return /(新加坡|SG|Singapore)/i.test(name);
+}
+
+
+// ==========================================
+// 3. 主程序入口
+// ==========================================
+function main(config) {
+  // 3.1 提取名字
+  // 从订阅里拿出所有节点的名字
+  // 增加保护，万一没有 proxies 字段不报错
+  const proxies = config.proxies || [];
+  const dailyProxies = proxies.filter(p => isDailyNode(p.name)).map(p => p.name);
+  const streamProxies = proxies.filter(p => isStreamNode(p.name)).map(p => p.name);
+
+  // 3.2 创建策略组 (组建队伍)
+  
+  // 队伍1: 日常主力 (自动测速选最快的)
+  const groupDaily = {
+    name: "🇺🇸🇯🇵 日常主力",
+    type: "url-test",
+    url: "http://www.gstatic.com/generate_204",
+    interval: 300,
+    tolerance: 50,
+    proxies: dailyProxies.length > 0 ? dailyProxies : ["DIRECT"] // 防止没节点报错
+  };
+
+  // 队伍2: 流媒体 (自动测速选最快的)
+  const groupStream = {
+    name: "🇸🇬 流媒体",
+    type: "url-test",
+    url: "http://www.gstatic.com/generate_204",
+    interval: 300,
+    tolerance: 50,
+    proxies: streamProxies.length > 0 ? streamProxies : ["DIRECT"]
+  };
+
+  // 把这两个新队伍放到所有队伍的最前面
+  if (!config["proxy-groups"]) config["proxy-groups"] = [];
+  config["proxy-groups"].unshift(groupDaily, groupStream);
+
+  // 3.3 应用规则 (贴路标)
+  // 把我们的 myRules 放在最前面，覆盖掉原本的规则
+  config.rules = myRules.concat(config.rules || []);
+
+  // 3.4 优化 DNS (防止DNS泄露或解析慢)
+  config["dns"] = {
+    "enable": true,
+    "ipv6": false, // 关掉IPv6保平安
+    "enhanced-mode": "fake-ip",
+    "fake-ip-range": "198.18.0.1/16",
+    "default-nameserver": ["223.5.5.5", "119.29.29.29"],
+    "nameserver": [
+      "https://dns.alidns.com/dns-query", 
+      "https://doh.pub/dns-query",
+      "https://8.8.8.8/dns-query"
+    ]
+  };
+
+  return config;
+}
