@@ -1,78 +1,17 @@
-// ==========================================
-// 1. 筛选节点的逻辑 (挑选队员 - 保持不变)
-// ==========================================
-
-// 判断是否为 "日常节点" (美国 或 日本) 且 (绝不要 香港 和 台湾)
 function isDailyNode(name) {
     const include = /(美国|日本|US|JP|Japan|America)/i.test(name);
     const exclude = /(香港|台湾|HK|TW|HongKong|Taiwan)/i.test(name);
     return include && !exclude;
 }
 
-// 判断是否为 "流媒体节点" (新加坡)
 function isStreamNode(name) {
     return /(新加坡|SG|Singapore)/i.test(name);
 }
 
-// ==========================================
-// 2. 主程序入口
-// ==========================================
 function main(config) {
-  
-  // ------------------------------------------
-  // 第一步：准备好你的高级 DNS (新电话本)
-  // ------------------------------------------
-  
-  // 国内DNS服务器
-  const domesticNameservers = [
-    "https://dns.alidns.com/dns-query", // 阿里云公共DNS
-    "https://doh.pub/dns-query", // 腾讯DNSPod
-    "https://doh.360.cn/dns-query" // 360安全DNS
-  ];
-  
-  // 国外DNS服务器
-  const foreignNameservers = [
-    "https://1.1.1.1/dns-query", // Cloudflare(主)
-    "https://1.0.0.1/dns-query", // Cloudflare(备)
-    "https://101.101.101.101/dns-query", // OpenDNS(主)
-    "https://101.102.103.104/dns-query", // OpenDNS(备)
-    "https://194.242.2.2/dns-query", // Mullvad(主)
-    "https://194.242.2.3/dns-query" // Mullvad(备)
-  ];
 
-  // DNS配置主体
-  const myDnsConfig = {
-    "enable": true,
-    "listen": "0.0.0.0:1053",
-    "ipv6": true, // 你新配置里开启了IPv6
-    "use-system-hosts": false,
-    "cache-algorithm": "arc",
-    "enhanced-mode": "fake-ip",
-    "fake-ip-range": "198.18.0.1/16",
-    "fake-ip-filter": [
-      "+.lan",
-      "+.local",
-      "+.msftconnecttest.com",
-      "+.msftncsi.com",
-      "localhost.ptlogin2.qq.com",
-      "localhost.sec.qq.com",
-      "localhost.work.weixin.qq.com"
-    ],
-    "default-nameserver": ["223.5.5.5", "119.29.29.29"],
-    "nameserver": [...domesticNameservers, ...foreignNameservers],
-    "proxy-server-nameserver": [...domesticNameservers, ...foreignNameservers],
-    "nameserver-policy": {
-      "geosite:private,cn,geolocation-cn": domesticNameservers,
-      "geosite:google,youtube,telegram,gfw,geolocation-!cn": foreignNameservers,
-    }
-  };
-
-  // ------------------------------------------
-  // 第二步：准备分流规则 (贴路标)
-  // ------------------------------------------
   const myRules = [
     // --- 流媒体队 (新加坡) ---
-    // Netflix (这一段放在前面，优先级最高)
     "DOMAIN-SUFFIX,netflix.com,🇸🇬 流媒体",
     "DOMAIN-SUFFIX,netflix.net,🇸🇬 流媒体",
     "DOMAIN-SUFFIX,nflximg.net,🇸🇬 流媒体",
@@ -80,9 +19,8 @@ function main(config) {
     "DOMAIN-SUFFIX,nflxso.net,🇸🇬 流媒体",
     "DOMAIN-SUFFIX,nflxext.com,🇸🇬 流媒体",
     "DOMAIN-KEYWORD,netflix,🇸🇬 流媒体",
-    "DOMAIN-SUFFIX,fast.com,🇸🇬 流媒体", // 把原本漏在下面的测速网也加上
+    "DOMAIN-SUFFIX,fast.com,🇸🇬 流媒体",
     
-    // TikTok (这一段放在前面，优先级最高)
     "DOMAIN-SUFFIX,tiktok.com,🇸🇬 流媒体",
     "DOMAIN-SUFFIX,tiktokv.com,🇸🇬 流媒体",
     "DOMAIN-SUFFIX,tiktokcdn.com,🇸🇬 流媒体",
@@ -90,8 +28,8 @@ function main(config) {
     "DOMAIN-SUFFIX,musical.ly,🇸🇬 流媒体",
     "DOMAIN-SUFFIX,muscdn.com,🇸🇬 流媒体",
     
-    // --- 剩下的全部给日常主力队 (美/日) ---
-    // Apple Relay (隐私中继相关)
+    // --- 日常主力队 (美/日) ---
+    // Apple Relay
     "DOMAIN-SUFFIX,apple-relay.akamaized.net,🇺🇸🇯🇵 日常主力",
     "DOMAIN-SUFFIX,apple-relay.apple.com,🇺🇸🇯🇵 日常主力",
     "DOMAIN-SUFFIX,apple-relay.cloudflare.com,🇺🇸🇯🇵 日常主力",
@@ -135,6 +73,7 @@ function main(config) {
     "DOMAIN-SUFFIX,stripe.com,🇺🇸🇯🇵 日常主力",
     "DOMAIN-SUFFIX,turn.livekit.cloud,🇺🇸🇯🇵 日常主力",
     "DOMAIN-SUFFIX,chatgpt.com,🇺🇸🇯🇵 日常主力",
+    // 这里的CIDR规则可以保留，因为它们匹配的是IP，不涉及DNS解析
     "IP-CIDR,24.199.123.28/32,🇺🇸🇯🇵 日常主力,no-resolve",
     "IP-CIDR,45.76.214.191/32,🇺🇸🇯🇵 日常主力,no-resolve",
     "IP-CIDR,64.23.132.171/32,🇺🇸🇯🇵 日常主力,no-resolve",
@@ -207,7 +146,7 @@ function main(config) {
     "DOMAIN-SUFFIX,line-cdn.net,🇺🇸🇯🇵 日常主力",
     "DOMAIN-SUFFIX,line-scdn.net,🇺🇸🇯🇵 日常主力",
 
-    // Porn Websites (咳咳，学习资料)
+    // Porn Websites
     "DOMAIN-KEYWORD,pornhub,🇺🇸🇯🇵 日常主力",
     "DOMAIN-KEYWORD,xhamster,🇺🇸🇯🇵 日常主力",
 
@@ -215,25 +154,21 @@ function main(config) {
     "DOMAIN-SUFFIX,steampowered.com,🇺🇸🇯🇵 日常主力",
 
     // --- 直连规则 (不用翻墙) ---
+    // 虽然DNS在国外，但IP如果匹配到是局域网，还是直连
     "IP-CIDR,172.172.0.0/32,DIRECT,no-resolve",
     "IP-CIDR,192.168.0.0/32,DIRECT,no-resolve",
     "IP-CIDR,192.192.0.0/32,DIRECT,no-resolve",
     "IP-CIDR,127.0.0.0/32,DIRECT,no-resolve",
-    "DOMAIN-KEYWORD,csust,DIRECT", // 长沙理工
-    "GEOIP,CN,DIRECT", // 中国大陆直连
+    "DOMAIN-KEYWORD,csust,DIRECT", 
+    "GEOIP,CN,DIRECT", 
 
-    // 注意：MATCH规则放在最后，代表“所有前面没提到的，都走这条路”
     "MATCH,🇺🇸🇯🇵 日常主力"
 ];
 
-  // ------------------------------------------
-  // 第三步：提取节点并组建队伍
-  // ------------------------------------------
   const proxies = config.proxies || [];
   const dailyProxies = proxies.filter(p => isDailyNode(p.name)).map(p => p.name);
   const streamProxies = proxies.filter(p => isStreamNode(p.name)).map(p => p.name);
 
-  // 队伍1: 日常主力
   const groupDaily = {
     name: "🇺🇸🇯🇵 日常主力",
     type: "url-test",
@@ -243,7 +178,6 @@ function main(config) {
     proxies: dailyProxies.length > 0 ? dailyProxies : ["DIRECT"]
   };
 
-  // 队伍2: 流媒体
   const groupStream = {
     name: "🇸🇬 流媒体",
     type: "url-test",
@@ -253,19 +187,10 @@ function main(config) {
     proxies: streamProxies.length > 0 ? streamProxies : ["DIRECT"]
   };
 
-  // 插入队伍
   if (!config["proxy-groups"]) config["proxy-groups"] = [];
   config["proxy-groups"].unshift(groupDaily, groupStream);
 
-  // ------------------------------------------
-  // 第四步：应用配置
-  // ------------------------------------------
-  
-  // 1. 覆盖规则
   config.rules = myRules.concat(config.rules || []);
-
-  // 2. 覆盖 DNS (这里用了你前面定义好的 myDnsConfig)
-  config["dns"] = myDnsConfig;
 
   return config;
 }
