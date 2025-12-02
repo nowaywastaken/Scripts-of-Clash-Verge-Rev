@@ -214,9 +214,6 @@ function main(config) {
     // Steam
     "DOMAIN-SUFFIX,steampowered.com,🇺🇸🇯🇵 日常主力",
 
-    // 注意：MATCH规则放在最后，代表“所有前面没提到的，都走这条路”
-    "MATCH,🇺🇸🇯🇵 日常主力",
-
     // --- 直连规则 (不用翻墙) ---
     "IP-CIDR,172.172.0.0/32,DIRECT,no-resolve",
     "IP-CIDR,192.168.0.0/32,DIRECT,no-resolve",
@@ -224,6 +221,9 @@ function main(config) {
     "IP-CIDR,127.0.0.0/32,DIRECT,no-resolve",
     "DOMAIN-KEYWORD,csust,DIRECT", // 长沙理工
     "GEOIP,CN,DIRECT" // 中国大陆直连
+
+    // 注意：MATCH规则放在最后，代表“所有前面没提到的，都走这条路”
+    "MATCH,🇺🇸🇯🇵 日常主力",
 ];
 
   // ------------------------------------------
