@@ -11,7 +11,7 @@ function isStreamNode(name) {
 function main(config) {
 
   const myRules = [
-    // --- 流媒体队 (新加坡) ---
+    // --- 流媒体队 (新加坡) --
     "DOMAIN-SUFFIX,netflix.com,🇸🇬 流媒体",
     "DOMAIN-SUFFIX,netflix.net,🇸🇬 流媒体",
     "DOMAIN-SUFFIX,nflximg.net,🇸🇬 流媒体",
@@ -28,7 +28,6 @@ function main(config) {
     "DOMAIN-SUFFIX,musical.ly,🇸🇬 流媒体",
     "DOMAIN-SUFFIX,muscdn.com,🇸🇬 流媒体",
     
-    // --- 日常主力队 (美/日) ---
     // Apple Relay
     "DOMAIN-SUFFIX,apple-relay.akamaized.net,🇺🇸🇯🇵 日常主力",
     "DOMAIN-SUFFIX,apple-relay.apple.com,🇺🇸🇯🇵 日常主力",
