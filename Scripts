@@ -8,10 +8,14 @@ function isStreamNode(name) {
     return /(新加坡|SG|Singapore)/i.test(name);
 }
 
+function isOvercooked(name) {
+  return /(香港|HK|HongKong)/i.test(name);
+}
+
 function main(config) {
 
   const myRules = [
-    // --- 流媒体队 (新加坡) --
+    // --- 流媒体队 (新加坡) ---
     "DOMAIN-SUFFIX,netflix.com,🇸🇬 流媒体",
     "DOMAIN-SUFFIX,netflix.net,🇸🇬 流媒体",
     "DOMAIN-SUFFIX,nflximg.net,🇸🇬 流媒体",
@@ -28,6 +32,7 @@ function main(config) {
     "DOMAIN-SUFFIX,musical.ly,🇸🇬 流媒体",
     "DOMAIN-SUFFIX,muscdn.com,🇸🇬 流媒体",
     
+    // --- 日常主力队 (美/日) ---
     // Apple Relay
     "DOMAIN-SUFFIX,apple-relay.akamaized.net,🇺🇸🇯🇵 日常主力",
     "DOMAIN-SUFFIX,apple-relay.apple.com,🇺🇸🇯🇵 日常主力",
@@ -36,109 +41,14 @@ function main(config) {
     "DOMAIN-SUFFIX,apple-relay.mask.apple-dns.net,🇺🇸🇯🇵 日常主力",
     "DOMAIN-SUFFIX,v2ex.com,🇺🇸🇯🇵 日常主力",
 
-    // ChatGPT
-    "DOMAIN,api.statsig.com,🇺🇸🇯🇵 日常主力",
-    "DOMAIN,browser-intake-datadoghq.com,🇺🇸🇯🇵 日常主力",
-    "DOMAIN,chat.openai.com.cdn.cloudflare.net,🇺🇸🇯🇵 日常主力",
-    "DOMAIN,o33249.ingest.sentry.io,🇺🇸🇯🇵 日常主力",
-    "DOMAIN,openai-api.arkoselabs.com,🇺🇸🇯🇵 日常主力",
-    "DOMAIN,openaicom-api-bdcpf8c6d2e9atf6.z01.azurefd.net,🇺🇸🇯🇵 日常主力",
-    "DOMAIN,openaicomproductionae4b.blob.core.windows.net,🇺🇸🇯🇵 日常主力",
-    "DOMAIN,production-openaicom-storage.azureedge.net,🇺🇸🇯🇵 日常主力",
-    "DOMAIN,static.cloudflareinsights.com,🇺🇸🇯🇵 日常主力",
-    "DOMAIN-KEYWORD,openaicom-api,🇺🇸🇯🇵 日常主力",
-    "DOMAIN-SUFFIX,algolia.net,🇺🇸🇯🇵 日常主力",
-    "DOMAIN-SUFFIX,auth0.com,🇺🇸🇯🇵 日常主力",
-    "DOMAIN-SUFFIX,cdn.cloudflare.net,🇺🇸🇯🇵 日常主力",
-    "DOMAIN-SUFFIX,challenges.cloudflare.com,🇺🇸🇯🇵 日常主力",
-    "DOMAIN-SUFFIX,chatgpt.livekit.cloud,🇺🇸🇯🇵 日常主力",
-    "DOMAIN-SUFFIX,client-api.arkoselabs.com,🇺🇸🇯🇵 日常主力",
-    "DOMAIN-SUFFIX,events.statsigapi.net,🇺🇸🇯🇵 日常主力",
-    "DOMAIN-SUFFIX,featuregates.org,🇺🇸🇯🇵 日常主力",
-    "DOMAIN-SUFFIX,host.livekit.cloud,🇺🇸🇯🇵 日常主力",
-    "DOMAIN-SUFFIX,identrust.com,🇺🇸🇯🇵 日常主力",
-    "DOMAIN-SUFFIX,intercom.io,🇺🇸🇯🇵 日常主力",
-    "DOMAIN-SUFFIX,intercomcdn.com,🇺🇸🇯🇵 日常主力",
-    "DOMAIN-SUFFIX,launchdarkly.com,🇺🇸🇯🇵 日常主力",
-    "DOMAIN-SUFFIX,oaistatic.com,🇺🇸🇯🇵 日常主力",
-    "DOMAIN-SUFFIX,oaiusercontent.com,🇺🇸🇯🇵 日常主力",
-    "DOMAIN-SUFFIX,observeit.net,🇺🇸🇯🇵 日常主力",
-    "DOMAIN-SUFFIX,openai.com,🇺🇸🇯🇵 日常主力",
-    "DOMAIN-SUFFIX,openaiapi-site.azureedge.net,🇺🇸🇯🇵 日常主力",
-    "DOMAIN-SUFFIX,openaicom.imgix.net,🇺🇸🇯🇵 日常主力",
-    "DOMAIN-SUFFIX,poe.com,🇺🇸🇯🇵 日常主力",
-    "DOMAIN-SUFFIX,segment.io,🇺🇸🇯🇵 日常主力",
-    "DOMAIN-SUFFIX,sentry.io,🇺🇸🇯🇵 日常主力",
-    "DOMAIN-SUFFIX,stripe.com,🇺🇸🇯🇵 日常主力",
-    "DOMAIN-SUFFIX,turn.livekit.cloud,🇺🇸🇯🇵 日常主力",
-    "DOMAIN-SUFFIX,chatgpt.com,🇺🇸🇯🇵 日常主力",
-    // 这里的CIDR规则可以保留，因为它们匹配的是IP，不涉及DNS解析
-    "IP-CIDR,24.199.123.28/32,🇺🇸🇯🇵 日常主力,no-resolve",
-    "IP-CIDR,45.76.214.191/32,🇺🇸🇯🇵 日常主力,no-resolve",
-    "IP-CIDR,64.23.132.171/32,🇺🇸🇯🇵 日常主力,no-resolve",
-    "IP-CIDR,143.198.200.27/32,🇺🇸🇯🇵 日常主力,no-resolve",
-    "IP-CIDR,159.89.204.203/32,🇺🇸🇯🇵 日常主力,no-resolve",
-
     // Google
-    "DOMAIN-KEYWORD,blogspot,🇺🇸🇯🇵 日常主力",
     "DOMAIN-KEYWORD,google,🇺🇸🇯🇵 日常主力",
-    "DOMAIN-SUFFIX,abc.xyz,🇺🇸🇯🇵 日常主力",
-    "DOMAIN-SUFFIX,admin.recaptcha.net,🇺🇸🇯🇵 日常主力",
-    "DOMAIN-SUFFIX,ampproject.org,🇺🇸🇯🇵 日常主力",
-    "DOMAIN-SUFFIX,android.com,🇺🇸🇯🇵 日常主力",
-    "DOMAIN-SUFFIX,androidify.com,🇺🇸🇯🇵 日常主力",
-    "DOMAIN-SUFFIX,appspot.com,🇺🇸🇯🇵 日常主力",
-    "DOMAIN-SUFFIX,autodraw.com,🇺🇸🇯🇵 日常主力",
-    "DOMAIN-SUFFIX,blogger.com,🇺🇸🇯🇵 日常主力",
-    "DOMAIN-SUFFIX,capitalg.com,🇺🇸🇯🇵 日常主力",
-    "DOMAIN-SUFFIX,certificate-transparency.org,🇺🇸🇯🇵 日常主力",
-    "DOMAIN-SUFFIX,chrome.com,🇺🇸🇯🇵 日常主力",
-    "DOMAIN-SUFFIX,chromeexperiments.com,🇺🇸🇯🇵 日常主力",
-    "DOMAIN-SUFFIX,chromestatus.com,🇺🇸🇯🇵 日常主力",
-    "DOMAIN-SUFFIX,chromium.org,🇺🇸🇯🇵 日常主力",
-    "DOMAIN-SUFFIX,creativelab5.com,🇺🇸🇯🇵 日常主力",
-    "DOMAIN-SUFFIX,debug.com,🇺🇸🇯🇵 日常主力",
-    "DOMAIN-SUFFIX,deepmind.com,🇺🇸🇯🇵 日常主力",
-    "DOMAIN-SUFFIX,dialogflow.com,🇺🇸🇯🇵 日常主力",
-    "DOMAIN-SUFFIX,firebaseio.com,🇺🇸🇯🇵 日常主力",
-    "DOMAIN-SUFFIX,getmdl.io,🇺🇸🇯🇵 日常主力",
-    "DOMAIN-SUFFIX,getoutline.org,🇺🇸🇯🇵 日常主力",
-    "DOMAIN-SUFFIX,ggpht.com,🇺🇸🇯🇵 日常主力",
-    "DOMAIN-SUFFIX,gmail.com,🇺🇸🇯🇵 日常主力",
-    "DOMAIN-SUFFIX,gmodules.com,🇺🇸🇯🇵 日常主力",
-    "DOMAIN-SUFFIX,godoc.org,🇺🇸🇯🇵 日常主力",
-    "DOMAIN-SUFFIX,golang.org,🇺🇸🇯🇵 日常主力",
+    "DOMAIN-SUFFIX,googleapis.com,🇺🇸🇯🇵 日常主力",
     "DOMAIN-SUFFIX,gstatic.com,🇺🇸🇯🇵 日常主力",
-    "DOMAIN-SUFFIX,gv.com,🇺🇸🇯🇵 日常主力",
-    "DOMAIN-SUFFIX,gvt0.com,🇺🇸🇯🇵 日常主力",
-    "DOMAIN-SUFFIX,gvt1.com,🇺🇸🇯🇵 日常主力",
-    "DOMAIN-SUFFIX,gvt3.com,🇺🇸🇯🇵 日常主力",
-    "DOMAIN-SUFFIX,gwtproject.org,🇺🇸🇯🇵 日常主力",
-    "DOMAIN-SUFFIX,itasoftware.com,🇺🇸🇯🇵 日常主力",
-    "DOMAIN-SUFFIX,madewithcode.com,🇺🇸🇯🇵 日常主力",
-    "DOMAIN-SUFFIX,material.io,🇺🇸🇯🇵 日常主力",
-    "DOMAIN-SUFFIX,polymer-project.org,🇺🇸🇯🇵 日常主力",
-    "DOMAIN-SUFFIX,recaptcha.net,🇺🇸🇯🇵 日常主力",
-    "DOMAIN-SUFFIX,shattered.io,🇺🇸🇯🇵 日常主力",
-    "DOMAIN-SUFFIX,synergyse.com,🇺🇸🇯🇵 日常主力",
-    "DOMAIN-SUFFIX,telephony.goog,🇺🇸🇯🇵 日常主力",
-    "DOMAIN-SUFFIX,tensorflow.org,🇺🇸🇯🇵 日常主力",
-    "DOMAIN-SUFFIX,tfhub.dev,🇺🇸🇯🇵 日常主力",
-    "DOMAIN-SUFFIX,tiltbrush.com,🇺🇸🇯🇵 日常主力",
-    "DOMAIN-SUFFIX,waveprotocol.org,🇺🇸🇯🇵 日常主力",
-    "DOMAIN-SUFFIX,waymo.com,🇺🇸🇯🇵 日常主力",
-    "DOMAIN-SUFFIX,webmproject.org,🇺🇸🇯🇵 日常主力",
-    "DOMAIN-SUFFIX,webrtc.org,🇺🇸🇯🇵 日常主力",
-    "DOMAIN-SUFFIX,whatbrowser.org,🇺🇸🇯🇵 日常主力",
-    "DOMAIN-SUFFIX,widevine.com,🇺🇸🇯🇵 日常主力",
-    "DOMAIN-SUFFIX,x.company,🇺🇸🇯🇵 日常主力",
-    "DOMAIN-SUFFIX,xn--ngstr-lra8j.com,🇺🇸🇯🇵 日常主力",
     "DOMAIN-SUFFIX,youtu.be,🇺🇸🇯🇵 日常主力",
-    "DOMAIN-SUFFIX,yt.be,🇺🇸🇯🇵 日常主力",
     "DOMAIN-SUFFIX,ytimg.com,🇺🇸🇯🇵 日常主力",
 
     // LINE
-    "DOMAIN-SUFFIX,scdn.co,🇺🇸🇯🇵 日常主力",
     "DOMAIN-SUFFIX,line.naver.jp,🇺🇸🇯🇵 日常主力",
     "DOMAIN-SUFFIX,line.me,🇺🇸🇯🇵 日常主力",
     "DOMAIN-SUFFIX,line-apps.com,🇺🇸🇯🇵 日常主力",
@@ -150,23 +60,27 @@ function main(config) {
     "DOMAIN-KEYWORD,xhamster,🇺🇸🇯🇵 日常主力",
 
     // Steam
-    "DOMAIN-SUFFIX,steampowered.com,🇺🇸🇯🇵 日常主力",
+    "DOMAIN-SUFFIX,steampowered.com,🇭🇰 香港",
+
+    //OverCooked
+    "DOMAIN-SUFFIX,gameanalytics.com,🇭🇰 香港",
+    "DOMAIN-SUFFIX,t17service.com,🇭🇰 香港",
+    "DOMAIN-SUFFIX,964nzttlu1.execute-api.eu-west-1.amazonaws.com,🇭🇰 香港",
+    "IP-CIDR,59.37.139.7/32,🇭🇰 香港,no-resolve",
 
     // --- 直连规则 (不用翻墙) ---
     // 虽然DNS在国外，但IP如果匹配到是局域网，还是直连
-    "IP-CIDR,172.172.0.0/32,DIRECT,no-resolve",
-    "IP-CIDR,192.168.0.0/32,DIRECT,no-resolve",
+    "IP-CIDR,172.16.0.0/12,DIRECT,no-resolve",
+    "IP-CIDR,192.168.0.0/16,DIRECT,no-resolve",
     "IP-CIDR,192.192.0.0/32,DIRECT,no-resolve",
-    "IP-CIDR,127.0.0.0/32,DIRECT,no-resolve",
-    "DOMAIN-KEYWORD,csust,DIRECT", 
-    "GEOIP,CN,DIRECT", 
-
-    "MATCH,🇺🇸🇯🇵 日常主力"
+    "IP-CIDR,127.0.0.0/8,DIRECT,no-resolve",
+    "IP-CIDR,10.0.0.0/8,DIRECT,no-resolve", 
 ];
 
   const proxies = config.proxies || [];
   const dailyProxies = proxies.filter(p => isDailyNode(p.name)).map(p => p.name);
   const streamProxies = proxies.filter(p => isStreamNode(p.name)).map(p => p.name);
+  const overcookedProxies = proxies.filter(p => isOvercooked(p.name)).map(p => p.name);
 
   const groupDaily = {
     name: "🇺🇸🇯🇵 日常主力",
@@ -186,8 +100,17 @@ function main(config) {
     proxies: streamProxies.length > 0 ? streamProxies : ["DIRECT"]
   };
 
+  const groupOvercooked = {
+    name: "🇭🇰 香港",
+    type: "url-test",
+    url: "http://www.gstatic.com/generate_204",
+    interval: 300,
+    tolerance: 50,
+    proxies: overcookedProxies.length > 0 ? overcookedProxies : ["DIRECT"]
+  };
+
   if (!config["proxy-groups"]) config["proxy-groups"] = [];
-  config["proxy-groups"].unshift(groupDaily, groupStream);
+  config["proxy-groups"].unshift(groupDaily, groupStream, groupOvercooked);
 
   config.rules = myRules.concat(config.rules || []);
 
