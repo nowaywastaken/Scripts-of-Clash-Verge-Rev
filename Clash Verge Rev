@@ -1,5 +1,11 @@
 function isDailyNode(name) {
-    const include = /(美国|日本|US|JP|Japan|America)/i.test(name);
+    const include = /(美国|日本|新加坡|US|JP|Japan|SG|Singapore)/i.test(name);
+    const exclude = /(香港|台湾|HK|TW|HongKong|Taiwan)/i.test(name);
+    return include && !exclude;
+}
+
+function isUSNode(name) {
+    const include = /(美国|US|America|States|新加坡|SG|Singapore)/i.test(name);
     const exclude = /(香港|台湾|HK|TW|HongKong|Taiwan)/i.test(name);
     return include && !exclude;
 }
@@ -32,63 +38,67 @@ function main(config) {
     "DOMAIN-SUFFIX,musical.ly,🇸🇬 流媒体",
     "DOMAIN-SUFFIX,muscdn.com,🇸🇬 流媒体",
     
-    // --- 日常主力队 (美/日) ---
-    // Apple Relay
-    "DOMAIN-SUFFIX,apple-relay.akamaized.net,🇺🇸🇯🇵 日常主力",
-    "DOMAIN-SUFFIX,apple-relay.apple.com,🇺🇸🇯🇵 日常主力",
-    "DOMAIN-SUFFIX,apple-relay.cloudflare.com,🇺🇸🇯🇵 日常主力",
-    "DOMAIN-SUFFIX,apple-relay.fastly-edge.com,🇺🇸🇯🇵 日常主力",
-    "DOMAIN-SUFFIX,apple-relay.mask.apple-dns.net,🇺🇸🇯🇵 日常主力",
-    "DOMAIN-SUFFIX,v2ex.com,🇺🇸🇯🇵 日常主力",
+    // --- 🌍 谷歌专线 (美/新) ---
+    "DOMAIN-KEYWORD,google,🌍 谷歌专线",
+    "DOMAIN-SUFFIX,googleapis.com,🌍 谷歌专线",
+    "DOMAIN-SUFFIX,gstatic.com,🌍 谷歌专线",
+    "DOMAIN-SUFFIX,youtu.be,🌍 谷歌专线",
+    "DOMAIN-SUFFIX,ytimg.com,🌍 谷歌专线",
 
-    // Google
-    "DOMAIN-KEYWORD,google,🇺🇸🇯🇵 日常主力",
-    "DOMAIN-SUFFIX,googleapis.com,🇺🇸🇯🇵 日常主力",
-    "DOMAIN-SUFFIX,gstatic.com,🇺🇸🇯🇵 日常主力",
-    "DOMAIN-SUFFIX,youtu.be,🇺🇸🇯🇵 日常主力",
-    "DOMAIN-SUFFIX,ytimg.com,🇺🇸🇯🇵 日常主力",
+    // --- 🚀 日常主力 (美/日/新 混合) ---
+    "DOMAIN-SUFFIX,apple-relay.akamaized.net,🚀 日常主力",
+    "DOMAIN-SUFFIX,apple-relay.apple.com,🚀 日常主力",
+    "DOMAIN-SUFFIX,apple-relay.cloudflare.com,🚀 日常主力",
+    "DOMAIN-SUFFIX,apple-relay.fastly-edge.com,🚀 日常主力",
+    "DOMAIN-SUFFIX,apple-relay.mask.apple-dns.net,🚀 日常主力",
+    "DOMAIN-SUFFIX,apple.com,🚀 日常主力",
+    "DOMAIN-SUFFIX,v2ex.com,🚀 日常主力",
 
-    // LINE
-    "DOMAIN-SUFFIX,line.naver.jp,🇺🇸🇯🇵 日常主力",
-    "DOMAIN-SUFFIX,line.me,🇺🇸🇯🇵 日常主力",
-    "DOMAIN-SUFFIX,line-apps.com,🇺🇸🇯🇵 日常主力",
-    "DOMAIN-SUFFIX,line-cdn.net,🇺🇸🇯🇵 日常主力",
-    "DOMAIN-SUFFIX,line-scdn.net,🇺🇸🇯🇵 日常主力",
+    "DOMAIN-SUFFIX,atlassian.com,🚀 日常主力",
 
-    // Porn Websites
-    "DOMAIN-KEYWORD,pornhub,🇺🇸🇯🇵 日常主力",
-    "DOMAIN-KEYWORD,xhamster,🇺🇸🇯🇵 日常主力",
+    "DOMAIN-SUFFIX,line.naver.jp,🚀 日常主力",
+    "DOMAIN-SUFFIX,line.me,🚀 日常主力",
+    "DOMAIN-SUFFIX,line-apps.com,🚀 日常主力",
+    "DOMAIN-SUFFIX,line-cdn.net,🚀 日常主力",
+    "DOMAIN-SUFFIX,line-scdn.net,🚀 日常主力",
 
-    // Steam
     "DOMAIN-SUFFIX,steampowered.com,🇭🇰 香港",
 
-    //OverCooked
     "DOMAIN-SUFFIX,gameanalytics.com,🇭🇰 香港",
     "DOMAIN-SUFFIX,t17service.com,🇭🇰 香港",
     "DOMAIN-SUFFIX,964nzttlu1.execute-api.eu-west-1.amazonaws.com,🇭🇰 香港",
     "IP-CIDR,59.37.139.7/32,🇭🇰 香港,no-resolve",
 
-    // --- 直连规则 (不用翻墙) ---
-    // 虽然DNS在国外，但IP如果匹配到是局域网，还是直连
+    "DOMAIN-SUFFIX,luyuyun.com,DIRECT",
     "IP-CIDR,172.16.0.0/12,DIRECT,no-resolve",
     "IP-CIDR,192.168.0.0/16,DIRECT,no-resolve",
-    "IP-CIDR,192.192.0.0/32,DIRECT,no-resolve",
     "IP-CIDR,127.0.0.0/8,DIRECT,no-resolve",
     "IP-CIDR,10.0.0.0/8,DIRECT,no-resolve", 
 ];
 
   const proxies = config.proxies || [];
+  
   const dailyProxies = proxies.filter(p => isDailyNode(p.name)).map(p => p.name);
+  const usProxies = proxies.filter(p => isUSNode(p.name)).map(p => p.name); 
   const streamProxies = proxies.filter(p => isStreamNode(p.name)).map(p => p.name);
   const overcookedProxies = proxies.filter(p => isOvercooked(p.name)).map(p => p.name);
 
   const groupDaily = {
-    name: "🇺🇸🇯🇵 日常主力",
+    name: "🚀 日常主力",
     type: "url-test",
     url: "http://www.gstatic.com/generate_204",
     interval: 300,
     tolerance: 50,
     proxies: dailyProxies.length > 0 ? dailyProxies : ["DIRECT"]
+  };
+
+  const groupGoogle = {
+    name: "🌍 谷歌专线",
+    type: "url-test",
+    url: "http://www.gstatic.com/generate_204",
+    interval: 300,
+    tolerance: 50,
+    proxies: usProxies.length > 0 ? usProxies : ["DIRECT"]
   };
 
   const groupStream = {
@@ -110,7 +120,7 @@ function main(config) {
   };
 
   if (!config["proxy-groups"]) config["proxy-groups"] = [];
-  config["proxy-groups"].unshift(groupDaily, groupStream, groupOvercooked);
+  config["proxy-groups"].unshift(groupDaily, groupGoogle, groupStream, groupOvercooked);
 
   config.rules = myRules.concat(config.rules || []);
 
